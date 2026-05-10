@@ -166,6 +166,29 @@ canvas{display:block;border-radius:16px;}
 #gift-msg .love-line{font-size:1.4rem;color:var(--gold);font-weight:300;letter-spacing:.05em;}
 .star-burst{position:fixed;pointer-events:none;z-index:5;font-size:2rem;animation:starPop .6s forwards;}
 @keyframes starPop{0%{transform:scale(0);opacity:1;}100%{transform:scale(3);opacity:0;}}
+/* ── CINEMATIC ── */
+#cinematic{background:#000;overflow:hidden;padding:0;}
+#cin-content{width:100%;height:100vh;position:relative;display:flex;align-items:center;justify-content:center;background:#0a0a12;}
+#cin-bars-top,#cin-bars-bot{position:absolute;left:0;width:100%;height:12%;background:#000;z-index:10;transition:height 1.2s ease;}
+#cin-bars-top{top:0;}#cin-bars-bot{bottom:0;}
+#cin-bars-top.open,#cin-bars-bot.open{height:0%;}
+#cin-scene{width:100%;height:76%;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;}
+#cin-ocean{position:absolute;bottom:0;left:0;width:100%;height:45%;background:linear-gradient(180deg,#0d2a4a 0%,#0a1a30 100%);overflow:hidden;}
+#cin-ocean::before{content:'';position:absolute;top:0;left:-50%;width:200%;height:100%;background:repeating-linear-gradient(transparent 0,transparent 8px,rgba(100,150,200,.12) 8px,rgba(100,150,200,.12) 10px);animation:wave 4s linear infinite;}
+@keyframes wave{0%{transform:translateX(0);}100%{transform:translateX(25%)}}
+#cin-scene::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0d0720 0%,#1a0d35 40%,#0d2a4a 100%);}
+#cin-figure{position:absolute;bottom:44%;left:50%;transform:translateX(-50%);z-index:5;opacity:0;transition:opacity 1.5s;}
+#cin-figure.show{opacity:1;}
+#cin-body{width:22px;height:60px;background:#1a0d1f;border-radius:4px 4px 0 0;margin:0 auto;}
+#cin-arm{width:38px;height:8px;background:#1a0d1f;border-radius:4px;position:absolute;top:18px;left:-8px;transform:rotate(-20deg);transform-origin:right center;}
+#cin-hair{width:26px;height:18px;background:#1a0d1f;border-radius:12px 12px 0 0;position:absolute;top:-18px;left:-2px;}
+#cin-cape{width:36px;height:48px;background:#1a0d1f;border-radius:0 0 12px 12px;position:absolute;top:14px;left:-7px;clip-path:polygon(20% 0%,80% 0%,100% 100%,0% 100%);opacity:.85;animation:capeWave 2.5s ease-in-out infinite alternate;}
+@keyframes capeWave{0%{clip-path:polygon(20% 0%,80% 0%,95% 100%,5% 100%);}100%{clip-path:polygon(18% 0%,82% 0%,100% 95%,0% 105%);}}
+#cin-scene::after{content:'';position:absolute;top:0;left:0;width:100%;height:55%;background-image:radial-gradient(1px 1px at 20% 10%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 60% 5%,#fff 0%,transparent 100%),radial-gradient(1px 1px at 80% 20%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 10% 35%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1px 1px at 45% 15%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1px 1px at 70% 30%,rgba(255,255,255,.6) 0%,transparent 100%);}
+#cin-subtitle-wrap{position:absolute;bottom:8%;width:100%;text-align:center;z-index:10;padding:0 1rem;}
+#cin-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,4vw,1.35rem);color:rgba(243,228,204,.92);letter-spacing:.06em;min-height:1.6em;font-style:italic;text-shadow:0 2px 12px rgba(0,0,0,.8);opacity:0;transition:opacity .6s;}
+#cin-sub.vis{opacity:1;}
+.devtag{margin-top:1.5rem;font-family:'Nunito',sans-serif;font-size:.85rem;letter-spacing:.2em;color:rgba(201,151,58,.5);font-weight:300;}
 </style>
 </head>
 <body>
@@ -235,6 +258,26 @@ canvas{display:block;border-radius:16px;}
   </div>
 </div>
 
+<!-- ══════════════ CINEMATIC ══════════════ -->
+<div class="screen" id="cinematic">
+  <div id="cin-content">
+    <div id="cin-bars-top"></div>
+    <div id="cin-bars-bot"></div>
+    <div id="cin-scene">
+      <div id="cin-ocean"></div>
+      <div id="cin-figure">
+        <div id="cin-body"></div>
+        <div id="cin-arm"></div>
+        <div id="cin-hair"></div>
+        <div id="cin-cape"></div>
+      </div>
+      <div id="cin-subtitle-wrap">
+        <p id="cin-sub"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ ENDING ══════════════ -->
 <div class="screen" id="ending">
   <div class="fh-layer" id="fhl"></div>
@@ -244,6 +287,7 @@ canvas{display:block;border-radius:16px;}
     <div id="gift-msg">
       <h1>Te ganaste<br><em>mi corazón</em>&nbsp;♥</h1>
       <p class="love-line">te amo mi niña hermosa</p>
+      <p class="devtag">desv.21&lt;&gt;</p>
     </div>
   </div>
 </div>
@@ -307,14 +351,20 @@ function renderHub(){
     el.innerHTML=`<span class="game-icon">${def.icon}</span><div class="game-title">${def.title}</div><div class="game-desc">${def.desc}</div>`;
     if(!completed.has(def.id)) el.onclick=()=>launchGame(def.id,def.title);
     g.appendChild(el);
-  }); 
-  
+  });
+  const allDone=GDEFS.every(d=>completed.has(d.id));
+  const btnQ=document.getElementById('btnQ');
+  if(btnQ){if(allDone)btnQ.classList.add('ready');else btnQ.classList.remove('ready');}
+  const pbar=document.getElementById('pbar');
+  if(pbar)pbar.style.width=(completed.size/GDEFS.length*100)+'%';
+}
+
 function launchGame(id,title){
   if(window._gc){window._gc();window._gc=null;}
   showScreen('game-screen');
   document.getElementById('game-title-h').textContent=title;
   document.getElementById('game-area').innerHTML='';
-  ({rain:playRain,memory:playMemory,hangman:playHangman,snake:playSnake,
+  ({rain:playRain,memory:playMemory,hangman:playHangman,
     whack:playWhack,scramble:playScramble,cupid:playCupid,quiz:playQuiz})[id]();
 }
 
@@ -733,7 +783,32 @@ function checkFinal(){
 /* ════════════════════════════════════════
    ENDING
 ════════════════════════════════════════ */
-function goEnding(){showScreen('ending');launchHearts();}
+function goEnding(){showScreen('cinematic');playCinematic();}
+
+function playCinematic(){
+  const top=document.getElementById('cin-bars-top');
+  const bot=document.getElementById('cin-bars-bot');
+  const fig=document.getElementById('cin-figure');
+  const sub=document.getElementById('cin-sub');
+  const lines=[
+    {t:1200, txt:'En algún lugar, más allá del mar...'},
+    {t:3800, txt:'¿Qué te parece este mundo?'},
+    {t:6800, txt:'A mí... me parece que es hermoso.'},
+    {t:10000,txt:''},
+  ];
+  setTimeout(()=>{top.classList.add('open');bot.classList.add('open');},100);
+  setTimeout(()=>{fig.classList.add('show');},800);
+  lines.forEach(({t,txt})=>{
+    setTimeout(()=>{
+      sub.classList.remove('vis');
+      setTimeout(()=>{sub.textContent=txt;if(txt)sub.classList.add('vis');},300);
+    },t);
+  });
+  setTimeout(()=>{
+    top.classList.remove('open');bot.classList.remove('open');
+    setTimeout(()=>{showScreen('ending');launchHearts();},1000);
+  },12000);
+}
 
 function launchHearts(count=18){
   const c=document.getElementById('fhl');
