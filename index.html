@@ -275,7 +275,6 @@ const GDEFS=[
   {id:'rain',   icon:'🌧️',title:'Lluvia de Corazones', desc:'Atrapá 15 corazones'},
   {id:'memory', icon:'🃏',title:'Memoria de Amor',      desc:'Encontrá todas las parejas'},
   {id:'hangman',icon:'🪢',title:'Ahorcado Romántico',   desc:'Adiviná la palabra de amor'},
-  {id:'snake',  icon:'🐍',title:'Serpiente Enamorada',  desc:'Comé 5 corazones'},
   {id:'whack',  icon:'🔨',title:'Corazones Saltarines', desc:'Golpeá 10 corazones'},
   {id:'scramble',icon:'🔤',title:'Palabras Revueltas',  desc:'Descifrá 3 palabras'},
   {id:'cupid',  icon:'🏹',title:'Cupido Apunta',        desc:'Acertá 8 corazones'},
@@ -308,12 +307,8 @@ function renderHub(){
     el.innerHTML=`<span class="game-icon">${def.icon}</span><div class="game-title">${def.title}</div><div class="game-desc">${def.desc}</div>`;
     if(!completed.has(def.id)) el.onclick=()=>launchGame(def.id,def.title);
     g.appendChild(el);
-  });
-  document.getElementById('pbar').style.width=(completed.size/8*100)+'%';
-  const btn=document.getElementById('btnQ');
-  completed.size===8?btn.classList.add('ready'):btn.classList.remove('ready');
-}
-
+  }); 
+  
 function launchGame(id,title){
   if(window._gc){window._gc();window._gc=null;}
   showScreen('game-screen');
@@ -481,66 +476,6 @@ function playHangman(){
 /* ════════════════════════════════════════
    GAME 4 – SERPIENTE ENAMORADA
 ════════════════════════════════════════ */
-function playSnake(){
-  const area=document.getElementById('game-area');
-  area.innerHTML=`
-    <div class="ginfo"><div>Corazones: <span id="ss">0</span>/5</div><div style="color:var(--dim);font-size:.8rem">Flechas o WASD</div></div>
-    <canvas id="sc" width="320" height="320" style="border-radius:16px;display:block;margin:0 auto;background:#0d0818;cursor:none;"></canvas>
-    <div style="display:flex;justify-content:center;gap:.5rem;margin-top:1rem;flex-wrap:wrap;">
-      ${['↑','↓','←','→'].map((a,i)=>`<button onclick="sd(${i})" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--cream);width:50px;height:50px;border-radius:10px;font-size:1.2rem;cursor:pointer;font-family:'Nunito',sans-serif;">${a}</button>`).join('')}
-    </div>`;
-  const canvas=document.getElementById('sc');
-  const ctx=canvas.getContext('2d');
-  const SZ=20,COLS=16;
-  let snake=[{x:8,y:8}],dir={x:1,y:0},nd={x:1,y:0},score=0,over=false;
-  let food=rFood();
-  function rFood(){
-    let p;do{p={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*COLS)};}
-    while(snake.some(s=>s.x===p.x&&s.y===p.y));return p;
-  }
-  window.sd=(i)=>{
-    const dirs=[{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0}];
-    const d=dirs[i];if(d.x!==-dir.x||d.y!==-dir.y)nd=d;
-  };
-  function kh(e){
-    const m={'ArrowUp':0,'ArrowDown':1,'ArrowLeft':2,'ArrowRight':3,'w':0,'s':1,'a':2,'d':3};
-    if(m[e.key]!==undefined){e.preventDefault();sd(m[e.key]);}
-  }
-  document.addEventListener('keydown',kh);
-  function draw(){
-    ctx.fillStyle='#0d0818';ctx.fillRect(0,0,320,320);
-    ctx.font=`${SZ*.9}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('♥',food.x*SZ+SZ/2,food.y*SZ+SZ/2);
-    snake.forEach((s,i)=>{
-      ctx.fillStyle=i===0?'#c4305a':'#7a1535';
-      ctx.beginPath();ctx.rect(s.x*SZ+1,s.y*SZ+1,SZ-2,SZ-2);ctx.fill();
-    });
-  }
-  function step(){
-    if(over)return;
-    dir=nd;
-    const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-    if(h.x<0||h.x>=COLS||h.y<0||h.y>=COLS||snake.some(s=>s.x===h.x&&s.y===h.y)){
-      over=true;clearInterval(loop);document.removeEventListener('keydown',kh);
-      ctx.fillStyle='rgba(9,6,15,.88)';ctx.fillRect(0,0,320,320);
-      ctx.fillStyle='#c4305a';ctx.font='bold 22px Nunito';ctx.textAlign='center';
-      ctx.fillText('¡Game Over! 💔',160,145);
-      ctx.fillStyle='#6e5e70';ctx.font='15px Nunito';ctx.fillText('Tocá para reintentar',160,175);
-      canvas.style.cursor='pointer';canvas.onclick=()=>playSnake();return;
-    }
-    snake.unshift(h);
-    if(h.x===food.x&&h.y===food.y){
-      score++;const el=document.getElementById('ss');if(el)el.textContent=score;
-      if(score>=5){over=true;clearInterval(loop);document.removeEventListener('keydown',kh);markDone('snake','¡Serpiente bien alimentada de amor! 🐍♥');return;}
-      food=rFood();
-    }else{snake.pop();}
-    draw();
-  }
-  draw();
-  const loop=setInterval(step,145);
-  window._gc=()=>{over=true;clearInterval(loop);document.removeEventListener('keydown',kh);};
-}
-
 /* ════════════════════════════════════════
    GAME 5 – CORAZONES SALTARINES
 ════════════════════════════════════════ */
