@@ -718,11 +718,10 @@ function goQuestions(){
   showScreen('questions');
   // Q1 build options
   const opts=[
-    {l:'Deepsito 🦈',v:'d'},
-    {l:'Soldier Boy 🪖',v:'s'},
-    {l:'Homelander 🦅',v:'h'},
-    {l:'Terror 🐶',v:'t'},
-    {l:'Todos pero mas Soldier Boy ♥',v:'ok'},
+    {l:'Deepsito 🦈',v:'ok'},
+    {l:'Soldier Boy 🪖',v:'ok'},
+    {l:'Homelander 🦅',v:'ok'},
+    {l:'Terror 🐶',v:'ok'},
   ];
   const q1=document.getElementById('q1opts');
   q1.innerHTML='';
@@ -736,7 +735,7 @@ function goQuestions(){
         const fb=document.getElementById('q1fb');
         if(o.v==='ok'){
           document.querySelectorAll('#q1opts .opt-btn').forEach(x=>x.classList.remove('sel'));
-          b.classList.add('ok');fb.textContent='¡Exacto! Menos él 😅';fb.className='afb yes';
+          b.classList.add('ok');fb.textContent='siii todos';fb.className='afb yes';
           q1ok=true;checkFinal();
         }else{
           b.classList.remove('sel');b.classList.add('no');
@@ -767,18 +766,17 @@ window.checkQ3=()=>{
   if(q3ok)return;
   const v=norm(document.getElementById('q3in').value);
   const fb=document.getElementById('q3fb');
-  if(v.includes('ojos')&&v.includes('mis ojos color avellana')){
-    fb.textContent='¡sii, me gustan tus ojos colo avellana 😍';fb.className='afb yes';q3ok=true;checkFinal();
-  }else{fb.textContent='Pensá bien qué es lo que más me llama la atención de vos... 👀';fb.className='afb no2';}
-};
-
-function checkFinal(){
-  if(q1ok&&q2ok&&q3ok){
-    const btn=document.getElementById('btnFinal');
-    btn.classList.add('show');
-    setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),200);
+  // Se quitó el espacio extra al inicio para que valide bien
+  if(v.includes('ojos') && v.includes('mis ojos color avellana')){
+    fb.textContent='¡sii, me gustan tus ojos color avellana 😍';
+    fb.className='afb yes';
+    q3ok=true;
+    checkFinal();
+  } else {
+    fb.textContent='Pensá bien qué es lo que más me llama la atención de vos... 👀';
+    fb.className='afb no2';
   }
-}
+};
 
 /* ════════════════════════════════════════
    ENDING
