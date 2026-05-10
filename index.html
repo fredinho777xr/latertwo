@@ -722,7 +722,7 @@ function goQuestions(){
     {l:'Soldier Boy 🪖',v:'s'},
     {l:'Homelander 🦅',v:'h'},
     {l:'Terror 🐶',v:'t'},
-    {l:'Todos menos Soldier Boy ♥',v:'ok'},
+    {l:'Todos pero mas Soldier Boy ♥',v:'ok'},
   ];
   const q1=document.getElementById('q1opts');
   q1.innerHTML='';
@@ -767,7 +767,7 @@ window.checkQ3=()=>{
   if(q3ok)return;
   const v=norm(document.getElementById('q3in').value);
   const fb=document.getElementById('q3fb');
-  if(v.includes('ojos')&&v.includes(' mis ojos color avellana')){
+  if(v.includes('ojos')&&v.includes('mis ojos color avellana')){
     fb.textContent='¡sii, me gustan tus ojos colo avellana 😍';fb.className='afb yes';q3ok=true;checkFinal();
   }else{fb.textContent='Pensá bien qué es lo que más me llama la atención de vos... 👀';fb.className='afb no2';}
 };
